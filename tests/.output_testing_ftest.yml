@@ -1,0 +1,19 @@
+tests:
+  - name: Passing test
+    type: command
+    command: echo success
+    expected:
+      return_code: 0
+      stdout: "success\n"
+  - name: Another passing test
+    type: command
+    command: echo success
+    expected:
+      return_code: 0
+      stdout: "success\n"
+  - name: Failing test
+    type: command
+    command: echo failure
+    expected:
+      return_code: 0
+      stdout: "success\n"
