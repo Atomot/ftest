@@ -32,7 +32,7 @@ impl ArgsParser {
 
     /// Canonicalizes the directory path so it can be used regardless of the current working directory
     fn canonicalize_directory(&mut self) {
-        let directory_full_path_result = canonicalize(self.directory.trim_end_matches("/"));
+        let directory_full_path_result = canonicalize(self.directory.trim_end_matches('/'));
         let directory_full_path = match directory_full_path_result {
             Ok(path) => path,
             Err(e) => {
@@ -52,7 +52,7 @@ impl ArgsParser {
 
     /// Makes the file path relative to the directory if it is not absolute
     fn relate_file_path_if_not_absolute(&mut self) {
-        let is_absolute_file_path = self.file.starts_with("/");
+        let is_absolute_file_path = self.file.starts_with('/');
         if !is_absolute_file_path {
             self.file = format!("{}/{}", self.directory, self.file)
         }

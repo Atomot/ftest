@@ -16,7 +16,7 @@ pub struct TestExecutionStats {
 
 impl fmt::Display for TestExecutionStats {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut stats_message = format!("{} tests run.", self.total_tests).to_string();
+        let mut stats_message = format!("{} tests run.", self.total_tests);
         if self.total_success > 0 {
             stats_message.push_str(&format!(" {} passed.", self.total_success));
         }
@@ -112,14 +112,13 @@ impl TestExecutor {
             success = false;
         }
         if expectations.stdout.is_some()
-            && expectations.stdout.as_deref().unwrap()
-                != String::from_utf8_lossy(&output.stdout).to_string()
+            && expectations.stdout.as_deref().unwrap() != String::from_utf8_lossy(&output.stdout)
         {
             println!("Failed");
             println!(
                 "Wrong stdout: Expected '{}' but got '{}'",
                 expectations.stdout.as_deref().unwrap(),
-                String::from_utf8_lossy(&output.stdout).to_string()
+                String::from_utf8_lossy(&output.stdout)
             );
             if self.execution_environment.verbose {
                 println!("stderr: '{}'", String::from_utf8_lossy(&output.stderr));
@@ -127,14 +126,13 @@ impl TestExecutor {
             success = false;
         }
         if expectations.stderr.is_some()
-            && expectations.stderr.as_deref().unwrap()
-                != String::from_utf8_lossy(&output.stderr).to_string()
+            && expectations.stderr.as_deref().unwrap() != String::from_utf8_lossy(&output.stderr)
         {
             println!("Failed");
             println!(
                 "Wrong stderr: Expected '{}' but got '{}'",
                 expectations.stderr.as_deref().unwrap(),
-                String::from_utf8_lossy(&output.stderr).to_string()
+                String::from_utf8_lossy(&output.stderr)
             );
             if self.execution_environment.verbose {
                 println!("stdout: '{}'", String::from_utf8_lossy(&output.stdout));
