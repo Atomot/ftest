@@ -1,7 +1,7 @@
+use crate::test_execution_environment::TestExecutionEnvironment;
+use crate::{TestCase, TestSuite};
 use std::fmt;
 use std::process::Command;
-use crate::{TestCase, TestSuite};
-use crate::test_execution_environment::TestExecutionEnvironment;
 
 enum TestResult {
     Success,
@@ -44,7 +44,10 @@ pub struct TestExecutor {
 }
 
 impl TestExecutor {
-    pub fn new(test_suite: TestSuite, execution_environment: TestExecutionEnvironment) -> TestExecutor {
+    pub fn new(
+        test_suite: TestSuite,
+        execution_environment: TestExecutionEnvironment,
+    ) -> TestExecutor {
         TestExecutor {
             test_suite,
             execution_environment,
@@ -54,7 +57,10 @@ impl TestExecutor {
 
     pub fn execute_all_tests(&mut self) -> &TestExecutionStats {
         if self.test_suite.name.is_some() {
-            println!("Tests results for suite '{}':", self.test_suite.name.as_ref().unwrap());
+            println!(
+                "Tests results for suite '{}':",
+                self.test_suite.name.as_ref().unwrap()
+            );
         } else {
             println!("Tests results:");
         }
@@ -65,7 +71,7 @@ impl TestExecutor {
             match result {
                 TestResult::Success => {
                     self.test_stats.total_success += 1;
-                },
+                }
                 TestResult::Failure(_) => {
                     self.test_stats.total_failures += 1;
                     if self.execution_environment.stop_on_failure {
@@ -83,33 +89,53 @@ impl TestExecutor {
             println!("Executing '{}'", test_case.command);
         }
         let mut command = Command::new("/bin/sh");
-        command.arg("-c").arg(test_case.command.clone()).current_dir(&self.execution_environment.directory);
+        command
+            .arg("-c")
+            .arg(test_case.command.clone())
+            .current_dir(&self.execution_environment.directory);
         let output = command.output().unwrap();
         let expectations = &test_case.expected;
         let mut success = true;
-        if expectations.return_code.is_some() && expectations.return_code.unwrap() != output.status.code().unwrap() {
+        if expectations.return_code.is_some()
+            && expectations.return_code.unwrap() != output.status.code().unwrap()
+        {
             println!("Failed");
-            println!("Wrong return code: Expected {} but got {}",
-                     expectations.return_code.unwrap(), output.status.code().unwrap());
+            println!(
+                "Wrong return code: Expected {} but got {}",
+                expectations.return_code.unwrap(),
+                output.status.code().unwrap()
+            );
             if self.execution_environment.verbose {
                 println!("stdout: '{}'", String::from_utf8_lossy(&output.stdout));
                 println!("stderr: '{}'", String::from_utf8_lossy(&output.stderr));
             }
             success = false;
         }
-        if expectations.stdout.is_some() && expectations.stdout.as_deref().unwrap() != String::from_utf8_lossy(&output.stdout).to_string() {
+        if expectations.stdout.is_some()
+            && expectations.stdout.as_deref().unwrap()
+                != String::from_utf8_lossy(&output.stdout).to_string()
+        {
             println!("Failed");
-            println!("Wrong stdout: Expected '{}' but got '{}'",
-                     expectations.stdout.as_deref().unwrap(), String::from_utf8_lossy(&output.stdout).to_string());
+            println!(
+                "Wrong stdout: Expected '{}' but got '{}'",
+                expectations.stdout.as_deref().unwrap(),
+                String::from_utf8_lossy(&output.stdout).to_string()
+            );
             if self.execution_environment.verbose {
                 println!("stderr: '{}'", String::from_utf8_lossy(&output.stderr));
             }
             success = false;
         }
-        if expectations.stderr.is_some() && expectations.stderr.as_deref().unwrap() != String::from_utf8_lossy(&output.stderr).to_string() {
+        if expectations.stderr.is_some()
+            && expectations.stderr.as_deref().unwrap()
+                != String::from_utf8_lossy(&output.stderr).to_string()
+        {
             println!("Failed");
-            println!("Wrong stderr: Expected '{}' but got '{}'",
-                     expectations.stderr.as_deref().unwrap(), String::from_utf8_lossy(&output.stderr).to_string());
+            println!(
+                "Wrong stderr: Expected '{}' but got '{}'",
+                expectations.stderr.as_deref().unwrap(),
+                String::from_utf8_lossy(&output.stderr).to_string()
+            );
             if self.execution_environment.verbose {
                 println!("stdout: '{}'", String::from_utf8_lossy(&output.stdout));
             }

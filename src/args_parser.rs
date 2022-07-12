@@ -1,5 +1,5 @@
+use clap::Parser;
 use std::fs::canonicalize;
-use clap::{Parser};
 
 /// A simple and efficient functional testing tool
 #[derive(Parser, Debug)]
@@ -40,7 +40,7 @@ impl ArgsParser {
                 std::process::exit(3);
             }
         };
-        let directory= match directory_full_path.to_str() {
+        let directory = match directory_full_path.to_str() {
             Some(str) => str,
             None => {
                 println!("Error while parsing directory path: Unsupported character set");

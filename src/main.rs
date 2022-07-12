@@ -1,7 +1,7 @@
 mod args_parser;
-mod test_suite;
-mod test_executor;
 mod test_execution_environment;
+mod test_executor;
+mod test_suite;
 
 use crate::args_parser::ArgsParser;
 use crate::test_execution_environment::TestExecutionEnvironment;

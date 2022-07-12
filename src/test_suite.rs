@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct CommandExpectation {
@@ -26,13 +26,20 @@ impl TestSuite {
         // Reads the tests file and parses it into a TestFile struct.
         let file_read_result = std::fs::read_to_string(path);
         if file_read_result.is_err() {
-            println!("Error while trying to read the tests definition file: {}", file_read_result.unwrap_err());
+            println!(
+                "Error while trying to read the tests definition file: {}",
+                file_read_result.unwrap_err()
+            );
             std::process::exit(3);
         }
         let yaml_str = file_read_result.unwrap();
-        let test_file_load_result: Result<TestSuite, serde_yaml::Error> = serde_yaml::from_str(&yaml_str);
+        let test_file_load_result: Result<TestSuite, serde_yaml::Error> =
+            serde_yaml::from_str(&yaml_str);
         if test_file_load_result.is_err() {
-            println!("Error while trying to parse the tests definition file: {}", test_file_load_result.unwrap_err());
+            println!(
+                "Error while trying to parse the tests definition file: {}",
+                test_file_load_result.unwrap_err()
+            );
             std::process::exit(3);
         }
         let test_file = test_file_load_result.unwrap();
