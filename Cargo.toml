@@ -1,7 +1,9 @@
 [package]
 name = "ftest"
 version = "0.1.0"
+description = "A simple and efficient functional testing tool."
 edition = "2021"
+publish = false
 
 [dependencies]
 serde = { version = "1.0.138", features = ["derive"] }
