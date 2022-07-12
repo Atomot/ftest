@@ -52,9 +52,11 @@ impl ArgsParser {
 
     /// Makes the file path relative to the directory if it is not absolute
     fn relate_file_path_if_not_absolute(&mut self) {
-        let is_absolute_file_path = self.file.starts_with('/');
-        if !is_absolute_file_path {
-            self.file = format!("{}/{}", self.directory, self.file)
+        match self.file.starts_with('/') {
+            true => {}
+            false => {
+                self.file = format!("{}/{}", self.directory, self.file);
+            }
         }
     }
 }
