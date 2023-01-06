@@ -55,7 +55,7 @@ impl ArgsParser {
         match self.file.starts_with('/') {
             true => {}
             false => {
-                self.file = format!("{}/{}", self.directory, self.file);
+                self.file = format!("./{}", self.file);
             }
         }
     }

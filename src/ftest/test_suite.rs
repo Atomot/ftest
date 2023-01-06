@@ -29,8 +29,8 @@ impl TestSuite {
             Ok(str) => str,
             Err(e) => {
                 println!(
-                    "Error while trying to read the tests definition file: {}",
-                    e
+                    "Error while trying to read the tests definition file {}: {}",
+                    path, e
                 );
                 std::process::exit(3);
             }
@@ -39,8 +39,8 @@ impl TestSuite {
             Ok(test_file) => test_file,
             Err(e) => {
                 println!(
-                    "Error while trying to parse the tests definition file: {}",
-                    e
+                    "Error while trying to parse the tests definition file {}: {}",
+                    path, e
                 );
                 std::process::exit(3);
             }
