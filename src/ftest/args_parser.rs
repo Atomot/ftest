@@ -10,7 +10,7 @@ pub struct ArgsParser {
     pub directory: String,
 
     /// Name of the tests definition file to use
-    #[clap(short, long, default_value = ".ftest.yml")]
+    #[clap(short, long, default_value = ".ftest.toml")]
     pub file: String,
 
     /// Stop after the first failure

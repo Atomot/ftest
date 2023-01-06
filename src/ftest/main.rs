@@ -19,7 +19,7 @@ fn main() {
     let mut test_executor = TestExecutor::new(test_suite, execution_environment);
     let tests_stats = test_executor.execute_all_tests();
     println!();
-    println!("{}", tests_stats);
+    tests_stats.print();
     if tests_stats.total_failures == 0 {
         std::process::exit(0);
     } else {

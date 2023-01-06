@@ -83,4 +83,4 @@ fabric.properties
 .idea
 *.iml
 
-ftest
+./ftest

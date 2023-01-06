@@ -1,6 +1,6 @@
 use crate::test_execution_environment::TestExecutionEnvironment;
 use crate::{TestCase, TestSuite};
-use std::fmt;
+use colored::Colorize;
 use std::process::Command;
 
 enum TestResult {
@@ -14,16 +14,19 @@ pub struct TestExecutionStats {
     pub total_failures: usize,
 }
 
-impl fmt::Display for TestExecutionStats {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut stats_message = format!("{} tests run.", self.total_tests);
+impl TestExecutionStats {
+    pub(crate) fn print(&self) {
+        print!("{}", format!("{} tests run.", self.total_tests).normal());
         if self.total_success > 0 {
-            stats_message.push_str(&format!(" {} passed.", self.total_success));
+            print!("{}", format!(" {} passed.", self.total_success).green());
         }
         if self.total_failures > 0 {
-            stats_message.push_str(&format!(" {} failed.", self.total_failures));
+            print!(
+                "{}",
+                format!(" {} failed.", self.total_failures).red().bold()
+            );
         }
-        write!(f, "{}", stats_message)
+        println!();
     }
 }
 
@@ -65,7 +68,7 @@ impl TestExecutor {
             println!("Tests results:");
         }
         self.test_stats = TestExecutionStats::new();
-        for test_case in &self.test_suite.tests {
+        for test_case in &self.test_suite.test {
             let result = self.execute_test_case(test_case);
             self.test_stats.total_tests += 1;
             match result {
@@ -96,10 +99,11 @@ impl TestExecutor {
         let output = command.output().unwrap();
         let expectations = &test_case.expected;
         let mut success = true;
+        let failed_message = "Failed".red().bold();
         if expectations.return_code.is_some()
             && expectations.return_code.unwrap() != output.status.code().unwrap()
         {
-            println!("Failed");
+            println!("{}", failed_message);
             println!(
                 "Wrong return code: Expected {} but got {}",
                 expectations.return_code.unwrap(),
@@ -114,7 +118,9 @@ impl TestExecutor {
         if expectations.stdout.is_some()
             && expectations.stdout.as_deref().unwrap() != String::from_utf8_lossy(&output.stdout)
         {
-            println!("Failed");
+            if success {
+                println!("{}", failed_message);
+            }
             println!(
                 "Wrong stdout: Expected '{}' but got '{}'",
                 expectations.stdout.as_deref().unwrap(),
@@ -128,7 +134,9 @@ impl TestExecutor {
         if expectations.stderr.is_some()
             && expectations.stderr.as_deref().unwrap() != String::from_utf8_lossy(&output.stderr)
         {
-            println!("Failed");
+            if success {
+                println!("{}", failed_message);
+            }
             println!(
                 "Wrong stderr: Expected '{}' but got '{}'",
                 expectations.stderr.as_deref().unwrap(),
@@ -140,7 +148,7 @@ impl TestExecutor {
             success = false;
         }
         if success {
-            println!("Passed");
+            println!("{}", "Passed".green());
         }
         if !success {
             return TestResult::Failure(test_case.name.clone());

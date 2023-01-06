@@ -1,0 +1,32 @@
+[[test]]
+name = "Passing test"
+type = "command"
+command = "echo success"
+
+[test.expected]
+return_code = 0
+stdout = """
+success
+"""
+
+[[test]]
+name = "Another passing test"
+type = "command"
+command = "echo success"
+
+[test.expected]
+return_code = 0
+stdout = """
+success
+"""
+
+[[test]]
+name = "Failing test"
+type = "command"
+command = "echo failure"
+
+[test.expected]
+return_code = 0
+stdout = """
+success
+"""

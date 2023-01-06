@@ -1,0 +1,32 @@
+name = "simple_add tests"
+
+[[test]]
+name = "Basic sum"
+type = "command"
+command = "./simple_add 1 2"
+expected.return_code = 0
+expected.stdout = "3\n"
+expected.stderr = ""
+
+[[test]]
+name = "Basic sum with negative numbers"
+type = "command"
+command = "./simple_add -1 -2"
+expected.return_code = 0
+expected.stdout = "-3\n"
+expected.stderr = ""
+
+[[test]]
+name = "Basic sum with mixed numbers"
+type = "command"
+command = "./simple_add -1 2"
+expected.return_code = 0
+expected.stdout = "1\n"
+expected.stderr = ""
+
+[[test]]
+name = "No arguments"
+type = "command"
+command = "./simple_add"
+expected.return_code = 1
+expected.stdout = ""

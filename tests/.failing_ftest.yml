@@ -1,6 +1,0 @@
-tests:
-  - name: Failing test
-    type: command
-    command: exit 0
-    expected:
-      return_code: 42

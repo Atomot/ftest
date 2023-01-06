@@ -1,7 +1,0 @@
-name: Named ftest suite
-tests:
-  - name: Dummy test
-    type: command
-    command: exit 0
-    expected:
-      return_code: 0

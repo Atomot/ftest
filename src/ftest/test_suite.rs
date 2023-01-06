@@ -7,6 +7,7 @@ pub struct CommandExpectation {
     pub stderr: Option<String>,
 }
 
+// TODO Maybe convert the different test types to an enum?
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct TestCase {
     pub name: String,
@@ -18,13 +19,13 @@ pub struct TestCase {
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct TestSuite {
     pub name: Option<String>,
-    pub tests: Vec<TestCase>,
+    pub test: Vec<TestCase>,
 }
 
 impl TestSuite {
     pub fn load_from_file(path: &str) -> TestSuite {
         // Reads the tests file and parses it into a TestFile struct.
-        let yaml_str = match std::fs::read_to_string(path) {
+        let file_str = match std::fs::read_to_string(path) {
             Ok(str) => str,
             Err(e) => {
                 println!(
@@ -34,7 +35,7 @@ impl TestSuite {
                 std::process::exit(3);
             }
         };
-        let test_file: TestSuite = match serde_yaml::from_str(&yaml_str) {
+        let test_file: TestSuite = match toml::from_str(&file_str) {
             Ok(test_file) => test_file,
             Err(e) => {
                 println!(
@@ -44,7 +45,7 @@ impl TestSuite {
                 std::process::exit(3);
             }
         };
-        if test_file.tests.is_empty() {
+        if test_file.test.is_empty() {
             println!("Warning: Tests definition file does not contain any test");
         }
         test_file
