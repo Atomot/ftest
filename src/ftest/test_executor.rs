@@ -1,5 +1,6 @@
 use crate::test_execution_environment::TestExecutionEnvironment;
-use crate::{TestCase, TestSuite};
+use crate::test_suite::CommandExpectation;
+use crate::{TestCase, TestsDefinition};
 use colored::Colorize;
 use std::process::Command;
 
@@ -41,14 +42,14 @@ impl TestExecutionStats {
 }
 
 pub struct TestExecutor {
-    test_suite: TestSuite,
+    test_suite: TestsDefinition,
     execution_environment: TestExecutionEnvironment,
     test_stats: TestExecutionStats,
 }
 
 impl TestExecutor {
     pub fn new(
-        test_suite: TestSuite,
+        test_suite: TestsDefinition,
         execution_environment: TestExecutionEnvironment,
     ) -> TestExecutor {
         TestExecutor {
@@ -97,7 +98,18 @@ impl TestExecutor {
             .arg(test_case.command.clone())
             .current_dir(&self.execution_environment.directory);
         let output = command.output().unwrap();
-        let expectations = &test_case.expected;
+        let mut expectations = test_case
+            .expected
+            .clone()
+            .unwrap_or_else(CommandExpectation::default);
+        if let Some(command_defaults) = self
+            .test_suite
+            .defaults
+            .as_ref()
+            .and_then(|d| d.command.as_ref().and_then(|c| c.expected.as_ref()))
+        {
+            expectations.fill_missing_with(command_defaults);
+        }
         let mut success = true;
         let failed_message = "Failed".red().bold();
         if expectations.return_code.is_some()

@@ -1,11 +1,13 @@
 name = "ftest auto tests"
 
+[defaults.command.expected]
+return_code = 0
+
 [[test]]
 name = "Basic help execution"
 type = "command"
 command = "./ftest -h"
 [test.expected]
-return_code = 0
 stderr = ""
 
 [[test]]
@@ -19,64 +21,51 @@ return_code = 2
 name = "Directory argument (with trailing slash)"
 type = "command"
 command = "./ftest ./tests/"
-[test.expected]
-return_code = 0
 
 [[test]]
 name = "Directory argument (without trailing slash)"
 type = "command"
 command = "./ftest ./tests"
-[test.expected]
-return_code = 0
 
 [[test]]
 name = "File argument (short form)"
 type = "command"
 command = "./ftest -f ./tests/.dummy_ftest.toml"
-[test.expected]
-return_code = 0
 
 [[test]]
 name = "File argument (long form)"
 type = "command"
 command = "./ftest --file ./tests/.dummy_ftest.toml"
-[test.expected]
-return_code = 0
 
 [[test]]
 name = "Directory and file arguments combined"
 type = "command"
-command = "./ftest --file .dummy_ftest.toml ./tests"
-[test.expected]
-return_code = 0
+command = "./ftest --file ./tests/.dummy_ftest.toml ./tests"
 
 [[test]]
 name = "Empty file"
 type = "command"
-command = "./ftest --file .empty_file.toml ./tests"
+command = "./ftest --file ./tests/.empty_file.toml ./tests"
 [test.expected]
 return_code = 3
 
 [[test]]
 name = "Empty tests"
 type = "command"
-command = "./ftest --file .empty_ftest.toml ./tests"
-[test.expected]
-return_code = 0
+command = "./ftest --file ./tests/.empty_ftest.toml ./tests"
 
 [[test]]
 name = "Failing tests"
 type = "command"
-command = "./ftest --file .failing_ftest.toml ./tests"
+command = "./ftest --file ./tests/.failing_ftest.toml ./tests"
 [test.expected]
 return_code = 1
 
 [[test]]
 name = "Test suite name in header"
 type = "command"
-command = "./ftest --file .named_suite_ftest.toml ./tests | head -n 1"
+command = "./ftest --file ./tests/.named_suite_ftest.toml ./tests | head -n 1"
 [test.expected]
-return_code = 0
 stdout = """
 Tests results for suite 'Named ftest suite':
 """
@@ -84,7 +73,7 @@ Tests results for suite 'Named ftest suite':
 [[test]]
 name = "Output format testing with passed and failed tests"
 type = "command"
-command = "./ftest --file .output_testing_ftest.toml ./tests"
+command = "./ftest --file ./tests/.output_testing_ftest.toml ./tests"
 [test.expected]
 return_code = 1
 stdout = """

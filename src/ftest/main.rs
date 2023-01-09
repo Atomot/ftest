@@ -6,17 +6,17 @@ mod test_suite;
 use crate::args_parser::ArgsParser;
 use crate::test_execution_environment::TestExecutionEnvironment;
 use crate::test_executor::TestExecutor;
-use crate::test_suite::{TestCase, TestSuite};
+use crate::test_suite::{TestCase, TestsDefinition};
 
 fn main() {
     let args: ArgsParser = ArgsParser::parse_args();
-    let test_suite: TestSuite = TestSuite::load_from_file(&args.file);
+    let tests_definition: TestsDefinition = TestsDefinition::load_from_file(&args.get_file_path());
     let execution_environment = TestExecutionEnvironment {
         directory: args.directory,
         stop_on_failure: args.stop_on_failure,
         verbose: args.verbose,
     };
-    let mut test_executor = TestExecutor::new(test_suite, execution_environment);
+    let mut test_executor = TestExecutor::new(tests_definition, execution_environment);
     let tests_stats = test_executor.execute_all_tests();
     println!();
     tests_stats.print();
