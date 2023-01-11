@@ -83,10 +83,10 @@ Passed
 ----- Another passing test -----
 Passed
 ----- Failing test -----
-Failed
 Wrong stdout: Expected 'success
 ' but got 'failure
 '
+Failed
 
 3 tests run. 2 passed. 1 failed.
 """

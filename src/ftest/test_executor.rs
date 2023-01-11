@@ -1,12 +1,10 @@
 use crate::test_execution_environment::TestExecutionEnvironment;
-use crate::test_suite::CommandExpectation;
-use crate::{TestCase, TestsDefinition};
+use crate::TestsDefinition;
 use colored::Colorize;
-use std::process::Command;
 
-enum TestResult {
+pub enum TestResult {
     Success,
-    Failure(String),
+    Failure,
 }
 
 pub struct TestExecutionStats {
@@ -60,6 +58,10 @@ impl TestExecutor {
     }
 
     pub fn execute_all_tests(&mut self) -> &TestExecutionStats {
+        if self.test_suite.test.is_none() || self.test_suite.test.as_ref().unwrap().is_empty() {
+            println!("No tests to execute.");
+            return &self.test_stats;
+        }
         if self.test_suite.name.is_some() {
             println!(
                 "Tests results for suite '{}':",
@@ -69,102 +71,30 @@ impl TestExecutor {
             println!("Tests results:");
         }
         self.test_stats = TestExecutionStats::new();
-        for test_case in &self.test_suite.test {
-            let result = self.execute_test_case(test_case);
+        for test_case in self.test_suite.test.as_ref().unwrap() {
+            println!("----- {} -----", test_case.name);
+            let result = test_case.execute_test_case(
+                &self.execution_environment,
+                self.test_suite.defaults.as_ref(),
+            );
+            match result {
+                TestResult::Success => println!("{}", "Passed".green()),
+                TestResult::Failure => println!("{}", "Failed".red().bold()),
+            }
             self.test_stats.total_tests += 1;
             match result {
                 TestResult::Success => {
                     self.test_stats.total_success += 1;
                 }
-                TestResult::Failure(_) => {
+                TestResult::Failure => {
                     self.test_stats.total_failures += 1;
                     if self.execution_environment.stop_on_failure {
+                        println!("Stopping execution on first failure.");
                         break;
                     }
                 }
             }
         }
         &self.test_stats
-    }
-
-    fn execute_test_case(&self, test_case: &TestCase) -> TestResult {
-        println!("----- {} -----", test_case.name);
-        if self.execution_environment.verbose {
-            println!("Executing '{}'", test_case.command);
-        }
-        let mut command = Command::new("/bin/sh");
-        command
-            .arg("-c")
-            .arg(test_case.command.clone())
-            .current_dir(&self.execution_environment.directory);
-        let output = command.output().unwrap();
-        let mut expectations = test_case
-            .expected
-            .clone()
-            .unwrap_or_else(CommandExpectation::default);
-        if let Some(command_defaults) = self
-            .test_suite
-            .defaults
-            .as_ref()
-            .and_then(|d| d.command.as_ref().and_then(|c| c.expected.as_ref()))
-        {
-            expectations.fill_missing_with(command_defaults);
-        }
-        let mut success = true;
-        let failed_message = "Failed".red().bold();
-        if expectations.return_code.is_some()
-            && expectations.return_code.unwrap() != output.status.code().unwrap()
-        {
-            println!("{}", failed_message);
-            println!(
-                "Wrong return code: Expected {} but got {}",
-                expectations.return_code.unwrap(),
-                output.status.code().unwrap()
-            );
-            if self.execution_environment.verbose {
-                println!("stdout: '{}'", String::from_utf8_lossy(&output.stdout));
-                println!("stderr: '{}'", String::from_utf8_lossy(&output.stderr));
-            }
-            success = false;
-        }
-        if expectations.stdout.is_some()
-            && expectations.stdout.as_deref().unwrap() != String::from_utf8_lossy(&output.stdout)
-        {
-            if success {
-                println!("{}", failed_message);
-            }
-            println!(
-                "Wrong stdout: Expected '{}' but got '{}'",
-                expectations.stdout.as_deref().unwrap(),
-                String::from_utf8_lossy(&output.stdout)
-            );
-            if self.execution_environment.verbose {
-                println!("stderr: '{}'", String::from_utf8_lossy(&output.stderr));
-            }
-            success = false;
-        }
-        if expectations.stderr.is_some()
-            && expectations.stderr.as_deref().unwrap() != String::from_utf8_lossy(&output.stderr)
-        {
-            if success {
-                println!("{}", failed_message);
-            }
-            println!(
-                "Wrong stderr: Expected '{}' but got '{}'",
-                expectations.stderr.as_deref().unwrap(),
-                String::from_utf8_lossy(&output.stderr)
-            );
-            if self.execution_environment.verbose {
-                println!("stdout: '{}'", String::from_utf8_lossy(&output.stdout));
-            }
-            success = false;
-        }
-        if success {
-            println!("{}", "Passed".green());
-        }
-        if !success {
-            return TestResult::Failure(test_case.name.clone());
-        }
-        TestResult::Success
     }
 }

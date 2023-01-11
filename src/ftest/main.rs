@@ -6,7 +6,7 @@ mod test_suite;
 use crate::args_parser::ArgsParser;
 use crate::test_execution_environment::TestExecutionEnvironment;
 use crate::test_executor::TestExecutor;
-use crate::test_suite::{TestCase, TestsDefinition};
+use crate::test_suite::TestsDefinition;
 
 fn main() {
     let args: ArgsParser = ArgsParser::parse_args();

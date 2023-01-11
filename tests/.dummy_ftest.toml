@@ -1,7 +1,6 @@
 [[test]]
 name = "Dummy test"
-type = "command"
-command = "exit 0"
+type = "dummy"
 
 [test.expected]
 return_code = 0
