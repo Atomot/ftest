@@ -15,7 +15,11 @@ pub struct TestExecutionStats {
 
 impl TestExecutionStats {
     pub(crate) fn print(&self) {
-        print!("{}", format!("{} tests run.", self.total_tests).normal());
+        let plural_indicator = if self.total_tests > 1 { "s" } else { "" };
+        print!(
+            "{}",
+            format!("{} test{} run.", self.total_tests, plural_indicator).normal()
+        );
         if self.total_success > 0 {
             print!("{}", format!(" {} passed.", self.total_success).green());
         }
