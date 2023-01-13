@@ -4,7 +4,7 @@ type = "command"
 command = "echo success"
 
 [test.expected]
-return_code = 0
+exit_code = 0
 stdout = """
 success
 """
@@ -15,7 +15,7 @@ type = "command"
 command = "echo success"
 
 [test.expected]
-return_code = 0
+exit_code = 0
 stdout = """
 success
 """
@@ -26,7 +26,7 @@ type = "command"
 command = "echo failure"
 
 [test.expected]
-return_code = 0
+exit_code = 0
 stdout = """
 success
 """

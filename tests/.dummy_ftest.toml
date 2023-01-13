@@ -3,4 +3,4 @@ name = "Dummy test"
 type = "dummy"
 
 [test.expected]
-return_code = 0
+exit_code = 0

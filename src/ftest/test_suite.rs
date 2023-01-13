@@ -6,7 +6,7 @@ use std::process::Command;
 #[derive(Debug, PartialEq, Eq, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct CommandExpectation {
-    pub return_code: Option<i32>,
+    pub exit_code: Option<i32>,
     pub stdout: Option<String>,
     pub stderr: Option<String>,
 }
@@ -14,15 +14,15 @@ pub struct CommandExpectation {
 impl CommandExpectation {
     pub fn default() -> CommandExpectation {
         CommandExpectation {
-            return_code: None,
+            exit_code: None,
             stdout: None,
             stderr: None,
         }
     }
 
     pub fn fill_missing_with(&mut self, other: &CommandExpectation) -> &mut Self {
-        if self.return_code.is_none() {
-            self.return_code = other.return_code;
+        if self.exit_code.is_none() {
+            self.exit_code = other.exit_code;
         }
         if self.stdout.is_none() {
             self.stdout = other.stdout.clone();
@@ -71,12 +71,12 @@ impl CommandTestCase {
             expectations.fill_missing_with(command_defaults);
         }
         let mut success = true;
-        if expectations.return_code.is_some()
-            && expectations.return_code.unwrap() != output.status.code().unwrap()
+        if expectations.exit_code.is_some()
+            && expectations.exit_code.unwrap() != output.status.code().unwrap()
         {
             println!(
-                "Wrong return code: Expected {} but got {}",
-                expectations.return_code.unwrap(),
+                "Wrong exit code: Expected {} but got {}",
+                expectations.exit_code.unwrap(),
                 output.status.code().unwrap()
             );
             if execution_environment.verbose {

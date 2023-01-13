@@ -4,4 +4,4 @@ type = "command"
 command = "exit 0"
 
 [test.expected]
-return_code = 42
+exit_code = 42

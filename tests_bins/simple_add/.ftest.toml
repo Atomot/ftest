@@ -1,7 +1,7 @@
 name = "simple_add tests"
 
 [defaults.command.expected]
-return_code = 0
+exit_code = 0
 
 [[test]]
 name = "Basic sum"
@@ -28,5 +28,5 @@ expected.stderr = ""
 name = "No arguments"
 type = "command"
 command = "./simple_add"
-expected.return_code = 1
+expected.exit_code = 1
 expected.stdout = ""

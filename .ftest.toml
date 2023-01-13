@@ -1,7 +1,7 @@
 name = "ftest auto tests"
 
 [defaults.command.expected]
-return_code = 0
+exit_code = 0
 
 [[test]]
 name = "Basic help execution"
@@ -15,7 +15,7 @@ name = "Invalid option"
 type = "command"
 command = "./ftest --invalid_option"
 [test.expected]
-return_code = 2
+exit_code = 2
 
 [[test]]
 name = "Directory argument (with trailing slash)"
@@ -47,7 +47,7 @@ name = "Empty file"
 type = "command"
 command = "./ftest --file ./tests/.empty_file.toml ./tests"
 [test.expected]
-return_code = 3
+exit_code = 3
 
 [[test]]
 name = "Empty tests"
@@ -59,7 +59,7 @@ name = "Failing tests"
 type = "command"
 command = "./ftest --file ./tests/.failing_ftest.toml ./tests"
 [test.expected]
-return_code = 1
+exit_code = 1
 
 [[test]]
 name = "Test suite name in header"
@@ -75,7 +75,7 @@ name = "Output format testing with passed and failed tests"
 type = "command"
 command = "./ftest --file ./tests/.output_testing_ftest.toml ./tests"
 [test.expected]
-return_code = 1
+exit_code = 1
 stdout = """
 Tests results:
 ----- Passing test -----
