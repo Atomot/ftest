@@ -37,6 +37,13 @@ impl CommandExpectation {
 #[derive(Debug, PartialEq, Eq, Deserialize)]
 pub struct CommandTestCase {
     pub command: String,
+    #[serde(flatten)]
+    pub params: CommandParams,
+}
+
+#[derive(Debug, PartialEq, Eq, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CommandParams {
     pub expected: Option<CommandExpectation>,
 }
 
@@ -44,7 +51,7 @@ impl CommandTestCase {
     fn execute_test_case(
         &self,
         execution_environment: &TestExecutionEnvironment,
-        defaults: Option<&CommandDefaults>,
+        defaults: Option<&CommandParams>,
     ) -> TestResult {
         if execution_environment.verbose {
             println!("Executing '{}'", self.command);
@@ -56,6 +63,7 @@ impl CommandTestCase {
             .current_dir(&execution_environment.directory);
         let output = command.output().unwrap();
         let mut expectations = self
+            .params
             .expected
             .clone()
             .unwrap_or_else(CommandExpectation::default);
@@ -111,11 +119,76 @@ impl CommandTestCase {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Deserialize, Clone)]
+#[serde(deny_unknown_fields, rename_all = "snake_case")]
+pub enum PathTargetType {
+    File,
+    Directory,
+}
+
+#[derive(Debug, PartialEq, Eq, Deserialize)]
+pub struct PathExistsTestCase {
+    pub path: String,
+    #[serde(flatten)]
+    pub params: PathExistsParams,
+}
+
+#[derive(Debug, PartialEq, Eq, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PathExistsParams {
+    pub target_type: Option<PathTargetType>,
+}
+
+impl PathExistsTestCase {
+    fn execute_test_case(
+        &self,
+        execution_environment: &TestExecutionEnvironment,
+        defaults: Option<&PathExistsParams>,
+    ) -> TestResult {
+        let path = std::path::Path::new(&execution_environment.directory).join(&self.path);
+        if execution_environment.verbose {
+            println!("Checking existence of '{}'", path.display());
+        }
+        if !path.exists() {
+            println!("'{}' does not exist", self.path);
+            return TestResult::Failure;
+        }
+        let target_type = self.params.target_type.clone().unwrap_or_else(|| {
+            defaults
+                .and_then(|d| d.target_type.as_ref())
+                .cloned()
+                .unwrap_or_else(|| {
+                    if path.is_dir() {
+                        PathTargetType::Directory
+                    } else {
+                        PathTargetType::File
+                    }
+                })
+        });
+        match target_type {
+            PathTargetType::File => {
+                if !path.is_file() {
+                    println!("'{}' is not a file", self.path);
+                    return TestResult::Failure;
+                }
+            }
+            PathTargetType::Directory => {
+                if !path.is_dir() {
+                    println!("'{}' is not a directory", self.path);
+                    return TestResult::Failure;
+                }
+            }
+        }
+        TestResult::Success
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Deserialize)]
 #[serde(deny_unknown_fields, tag = "type", rename_all = "snake_case")]
 pub enum TestCaseType {
     Dummy,
     Command(CommandTestCase),
+    PathExists(PathExistsTestCase),
 }
 
 #[derive(Debug, PartialEq, Eq, Deserialize)]
@@ -137,26 +210,27 @@ impl TestCase {
                 execution_environment,
                 defaults.and_then(|d| d.command.as_ref()),
             ),
+            TestCaseType::PathExists(path_exists_test_case) => path_exists_test_case
+                .execute_test_case(
+                    execution_environment,
+                    defaults.and_then(|d| d.path_exists.as_ref()),
+                ),
         }
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct CommandDefaults {
-    pub expected: Option<CommandExpectation>,
-}
-
-#[derive(Debug, PartialEq, Eq, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct Defaults {
-    pub command: Option<CommandDefaults>,
+    pub command: Option<CommandParams>,
+    pub path_exists: Option<PathExistsParams>,
 }
 
 #[derive(Debug, PartialEq, Eq, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct TestsDefinition {
     pub name: Option<String>,
+    pub always_stop_after_failure: Option<bool>,
     pub defaults: Option<Defaults>,
     pub test: Option<Vec<TestCase>>,
 }

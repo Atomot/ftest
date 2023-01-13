@@ -84,3 +84,4 @@ fabric.properties
 *.iml
 
 ./ftest
+sandbox/

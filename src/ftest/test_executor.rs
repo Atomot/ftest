@@ -88,8 +88,13 @@ impl TestExecutor {
                 }
                 TestResult::Failure => {
                     self.test_stats.total_failures += 1;
-                    if self.execution_environment.stop_on_failure {
-                        println!("Stopping execution on first failure.");
+                    if self.execution_environment.stop_on_failure
+                        || self.test_suite.always_stop_after_failure.unwrap_or(false)
+                    {
+                        println!(
+                            "{}",
+                            "\nStopping execution on first failure.".yellow().italic()
+                        );
                         break;
                     }
                 }
