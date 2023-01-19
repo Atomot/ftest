@@ -1,6 +1,6 @@
 [package]
 name = "ftest"
-version = "0.1.0"
+version = "0.0.1"
 description = "A simple and efficient functional testing tool."
 authors = ["Hugo Atomot"]
 license = "GPL-3.0"

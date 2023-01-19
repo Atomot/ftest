@@ -1,0 +1,24 @@
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build and publish package
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: cargo build --release -p ftest
+    - name: Strip binary
+      run: strip -s target/release/ftest
+    - name: Package into RPM
+      run: cargo generate-rpm
+    - name: Upload RPM to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/release/generate-rpm/ftest-*.rpm
+          tag: ${{ github.ref }}
+          overwrite: true
