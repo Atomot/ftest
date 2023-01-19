@@ -2,8 +2,14 @@
 name = "ftest"
 version = "0.1.0"
 description = "A simple and efficient functional testing tool."
+authors = ["Hugo Atomot"]
+license = "GPL-3.0"
 edition = "2021"
 publish = false
+[package.metadata.generate-rpm]
+assets = [
+    { source = "target/release/ftest", dest = "/usr/bin/ftest", mode = "755" }
+]
 
 [[bin]]
 name = "ftest"
@@ -18,3 +24,4 @@ serde = { version = "1.0.138", features = ["derive"] }
 toml = "0.5.10"
 clap = { version = "4.0.32", features = ["derive"] }
 colored = "2.0.0"
+cargo-generate-rpm = "0.9.1"
