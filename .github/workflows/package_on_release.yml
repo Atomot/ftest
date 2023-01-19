@@ -9,6 +9,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Setup cargo
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: stable
+          override: true
+    - name: Fetch dependencies
+      run: cargo fetch
     - name: Build
       run: cargo build --release -p ftest
     - name: Strip binary
