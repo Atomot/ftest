@@ -24,7 +24,8 @@ jobs:
       with:
           toolchain: stable
           override: true
-    - uses: Swatinem/rust-cache@v2
+    - name: Activate cache
+      uses: Swatinem/rust-cache@v2
       with:
         cache-on-failure: true
     - name: Set up cargo-generate-rpm
