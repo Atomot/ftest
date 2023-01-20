@@ -4,6 +4,20 @@
 
 It is easily configurable via an easy-to-read (and easy-to-write) TOML configuration file.
 
+## Installation
+
+### RPM package (Fedora, CentOS, RHEL)
+
+You can easily install `ftest` via the RPM package, by downloading the latest release from the releases page.
+
+You can then install the package with the following command:
+
+```bash
+sudo dnf install ftest-<version>.rpm
+```
+
+(This also works with `yum`.)
+
 ## Usage
 
 It will look for a `.ftest.toml` file in the current directory, and use that to run the tests.
