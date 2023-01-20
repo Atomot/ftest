@@ -19,28 +19,43 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Set up cargo
       uses: actions-rs/toolchain@v1
       with:
           toolchain: stable
           override: true
+
     - name: Activate cache
       uses: Swatinem/rust-cache@v2
       with:
         cache-on-failure: true
+
     - name: Set up cargo-generate-rpm
       run: cargo install cargo-generate-rpm
+
     - name: Build
-      run: cargo build --release -p ftest
+      run: cargo build --release -p ftest --target x86_64-unknown-linux-gnu
+
     - name: Strip binary
-      run: strip -s target/release/ftest
+      run: strip -s target/x86_64-unknown-linux-gnu/release/ftest
+
     - name: Package into RPM
       run: cargo generate-rpm
+
+    - name: Upload Linux executable to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/x86_64-unknown-linux-gnu/release/ftest
+        tag: ${{ github.ref }}
+        overwrite: true
+
     - name: Upload RPM to release
       uses: svenstaro/upload-release-action@v2
       with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/generate-rpm/ftest-*.rpm
-          file_glob: true
-          tag: ${{ github.ref }}
-          overwrite: true
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/generate-rpm/ftest-*.rpm
+        file_glob: true
+        tag: ${{ github.ref }}
+        overwrite: true

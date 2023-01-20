@@ -8,7 +8,7 @@ edition = "2021"
 publish = false
 [package.metadata.generate-rpm]
 assets = [
-    { source = "target/release/ftest", dest = "/usr/bin/ftest", mode = "755" }
+    { source = "target/x86_64-unknown-linux-gnu/release/ftest", dest = "/usr/bin/ftest", mode = "755" }
 ]
 
 [[bin]]
