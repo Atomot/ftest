@@ -18,6 +18,18 @@ sudo dnf install ftest-<version>.rpm
 
 (This also works with `yum`.)
 
+### Manual installation
+
+You can also install `ftest` manually, by downloading the latest release executable from the releases page.
+
+Make sure to put it in a directory included in the `PATH`, such as `/usr/local/bin`.
+
+### Building from source
+
+You can build `ftest` from source by cloning this repository and running `cargo build --release -p ftest`. You will then find the executable in the `target/release` directory.
+
+You will need to have the Rust toolchain installed.
+
 ## Usage
 
 It will look for a `.ftest.toml` file in the current directory, and use that to run the tests.
